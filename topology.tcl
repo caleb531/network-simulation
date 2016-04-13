@@ -54,42 +54,110 @@ proc make_white_node { traffic_src }
 
 }
 
+#I need a better name!
+proc add_green_duplex_links { lowerIndex upperIndex dest } 
+{
+	set ns [Simulator instance]
+
+	for {set i lowerIndex} {$i <= upperIndex} {incr i}
+	{
+		#link the ith node with the destination node
+		$ns duplex-link $nodes($i) $nodes(dest) 1Mb 20ms DropTail
+
+		#set the destination's queue size
+		$ns queue-limit $nodes($i) $nodes(dest) 10
+	}
+}
+
+#I need a better name!
+proc add_black_duplex_links { dest lowerIndex upperIndex }
+{
+	set ns [Simulator instance]
+
+	for {set i lowerIndex} {$i <= upperIndex} {incr i}
+	{
+		#link the ith node with the destination node
+		$ns duplex-link $nodes($i) $nodes(dest) 8Mb 50ms DropTail
+
+		#set the destination's queue size
+		$ns queue-limit $nodes($i) $nodes(dest) 15
+	}
+}
+
+#I need a better name!
+proc add_purple_duplex_links { dest lowerIndex upperIndex }
+{
+	set ns [Simulator instance]
+
+	for {set i lowerIndex} {$i <= upperIndex} {incr i}
+	{
+		#link the ith node with the destination node
+		$ns duplex-link $nodes($i) $nodes(dest) 2Mb 40ms DropTail
+
+		#set the destination's queue size
+		$ns queue-limit $nodes($i) $nodes(dest) 15
+	}
+}
+
 proc interconnect_nodes { }
 {
-	#ROUTER 1
-	#[12, 11, 10, 9, 8 and 7 all connect to 1]
+	#ROUTER 0
+	#connect edges [13-16] to router 0 via green links
+	[add_green_duplex_links 13 16 0]
 
-	$ns duplex-link $nodes(12) $nodes(1) 1 Mb 20ms DropTail
-	$ns queue-limit $nodes(12) $nodes(1) 10
+	
+	#connect router 0 to router 2
+	[add_black_duplex_links 2 0 0]
 
-	$ns duplex-link $nodes(11) $nodes(1) 1 Mb 20ms DropTail
-	$ns queue-limit $nodes(11) $nodes(1) 10
-
-	$ns duplex-link $nodes(10) $nodes(1) 1 Mb 20ms DropTail
-	$ns queue-limit $nodes(10) $nodes(1) 10
-
-	$ns duplex-link $nodes(9) $nodes(1) 1 Mb 20ms DropTail
-	$ns queue-limit $nodes(9) $nodes(1) 10
-
-	$ns duplex-link $nodes(8) $nodes(1) 1 Mb 20ms DropTail
-	$ns queue-limit $nodes(8) $nodes(1) 10
-
-	$ns duplex-link $nodes(7) $nodes(1) 1 Mb 20ms DropTail
-	$ns queue-limit $nodes(7) $nodes(1) 10
-
-
-
-	#connect router 1 to neighboring routers [2, 3]
-	$ns duplex-link $nodes(1) $nodes(2) 8 Mb 20ms DropTail
-	$ns queue-limit $nodes(7) $nodes(1) 10
-
-	$ns duplex-link $nodes(1) $nodes(3) 8 Mb 20ms DropTail
-	$ns queue-limit $nodes(7) $nodes(1) 10
 
 	
 
+	#ROUTER 1
+	#connect edges [7-12] to router 1 via green links
+	[add_green_duplex_links 7 12 1]
+
+	
+	#connect router 1 to router 2
+	[add_black_duplex_links 2 1 1]
+
+	#connect router 1 to router 3
+	[add_black_duplex_links 3 1 1]
 
 
+
+	#ROUTER 2
+	#connect router 2 to router 2
+	[add_black_duplex_links 3 2 2]
+
+
+
+	#ROUTER 4
+	#connect edges [17-20] to router 4 via green links
+	[add_green_duplex_links 17 20 4]
+
+	
+	#connect router 4 to router 2
+	[add_purple_duplex_links 2 4 4]
+
+
+
+	#ROUTER 5
+	#connect edges [21-24] to router 5 via green links
+	[add_green_duplex_links 21 24 5]
+
+	
+	#connect router 5 to router 3
+	[add_purple_duplex_links 3 5 5]
+
+
+
+	#ROUTER 6
+	#connect edges [25-27] to router 6 via green links
+	[add_green_duplex_links 25 27 6]
+
+	
+	#connect router 0 to router 2
+	[add_black_duplex_links 2 0 0]
 }
 
 proc create_nodes { }
@@ -136,7 +204,7 @@ $ns trace-all $tracefd
 
 [init_topology]
 
-
+#Configure agents
 
 
 
