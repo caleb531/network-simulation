@@ -124,23 +124,6 @@ proc setup_router_one_edge_agents { router_one_ftp lowerIndex upperIndex }
 }
 
 
-#set sink [new Agent/TCPSink]
-#	$ns attach-agent $n3 $sink
-#	$ns connect $tcp $sink
-#	$tcp set fid_ 1
-
-
-proc setup_agents_and_events_in_topology {} 
-{
-
-
-	
-
-}
-
-
-
-
 
 
 
