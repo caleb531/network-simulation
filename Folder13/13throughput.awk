@@ -1,3 +1,5 @@
+# Calculate throughput for flow 13->21
+
 BEGIN {
     node = 1;
     time1 = 0.0;
