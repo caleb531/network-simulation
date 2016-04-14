@@ -18,7 +18,7 @@ BEGIN {
 	src = $9;
 	dst = $10;
 	seq_no = $11;
-	packet_id = $12;;
+	packet_id = $12;
 
     # Replace 0 with the designated flow_id for flow 13->21
 	if (flow_id != 0) {
