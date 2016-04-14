@@ -67,7 +67,7 @@ END {
 			delay_diff = packet_duration - last_delay;
 			jitter = (seqno_diff != 0) ? (delay_diff / seqno_diff) : 0;
 
-			printf("%f \t %f\n", start, jitter) > "jitter.xls";
+			printf("%f \t %f\n", start, jitter) > "13jitter.xls";
 
 			last_seqno = pkt_seqno[packet_id];
 			last_delay = packet_duration;
