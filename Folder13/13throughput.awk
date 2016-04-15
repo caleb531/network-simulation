@@ -1,4 +1,4 @@
-# Calculate throughput for flow 13->21
+# Calculate average throughput per 0.5 seconds for flow 13->21
 
 BEGIN {
 	node = 21;
