@@ -22,27 +22,27 @@ BEGIN {
 	packet_id = $12;
 
 	# Replace 0 with the designated flow_id for flow 13->21
-	if (flow_id != 0) {
-		next;
-	}
+	if (src == 13 && dst == 21) {
 
-	if (packet_id > highest_packet_id) {
-		highest_packet_id = packet_id;
-	}
+		if (packet_id > highest_packet_id) {
+			highest_packet_id = packet_id;
+		}
 
-	# Record the transmission time
-	if (start_time[packet_id] == 0) {
-		# Record the sequence number
-		pkt_seqno[packet_id] = seq_no;
-		start_time[packet_id] = time;
-	}
+		# Record the transmission time
+		if (start_time[packet_id] == 0) {
+			# Record the sequence number
+			pkt_seqno[packet_id] = seq_no;
+			start_time[packet_id] = time;
+		}
 
 
-	# Record the receiving time for CBR
+		# Record the receiving time for CBR
 
-	if (action != "d") {
+		if (action != "d") {
 
-		end_time[packet_id] = (action == "r") ? time : -1;
+			end_time[packet_id] = (action == "r") ? time : -1;
+
+		}
 
 	}
 

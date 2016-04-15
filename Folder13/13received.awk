@@ -22,8 +22,8 @@ BEGIN {
 	if (src == 13 && dst == 21) {
 
 		if (time2 - time1 > 0.5) {
-			printf("%f \t %f\n", time2, num_packets) > "13sent.xls";
-			time1 = $2;
+			printf("%f \t %f\n", time2, num_packets) > "13received.xls";
+			time1 = time2;
 			num_packets = 0;
 		}
 

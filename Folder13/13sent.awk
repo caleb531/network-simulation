@@ -20,18 +20,19 @@ BEGIN {
 	seq_no = $11;
 	packet_id = $12;
 
-	# Replace 0 with the designated flow_id for flow 13->21
-	if (flow_id != 0) {
-		next;
+	if (src == 13 && dst == 21) {
+
+		if (time2 - time1 > 0.5) {
+			printf("%f \t %f\n", time2, num_packets) > "13sent.xls";
+			time1 = time2;
+			num_packets = 0;
+		}
+
+		# If packet was received at 2nd hop
+		if (action == "r" && to == 1) {
+			num_packets++;
+		}
+
 	}
 
-	if (time2 - time1 > 0.5) {
-		printf("%f \t %f\n", time2, num_packets) > "13sent.xls";
-		time1 = $2;
-		num_packets = 0;
-	}
-
-	if (action == "r" && to == 1) {
-		num_packets++;
-	}
 }

@@ -20,21 +20,20 @@ BEGIN {
 	seq_no = $11;
 	packet_id = $12;
 
-	# Replace 0 with the designated flow_id for flow 13->21
-	if (flow_id != 0) {
-		next;
-	}
+	if (src == 13 && dst == 21) {
 
-	if (packet_id > highest_packet_id) {
-		highest_packet_id = packet_id;
-	}
+		if (packet_id > highest_packet_id) {
+			highest_packet_id = packet_id;
+		}
 
-	if (start_time[packet_id] == 0) {
-		start_time[packet_id] = time;
-	}
+		if (start_time[packet_id] == 0) {
+			start_time[packet_id] = time;
+		}
 
-	if (action != "d") {
-		end_time[packet_id] = (action == "r") ? time : -1;
+		if (action != "d") {
+			end_time[packet_id] = (action == "r") ? time : -1;
+		}
+
 	}
 
 }
