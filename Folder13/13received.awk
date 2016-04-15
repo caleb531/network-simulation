@@ -1,4 +1,4 @@
-# Calculate number of sent packets per 0.5 seconds for flow 13->21
+# Calculate number of packets received at dst per 0.5 seconds for flow 13->21
 
 BEGIN {
 	time1 = 0.0;
