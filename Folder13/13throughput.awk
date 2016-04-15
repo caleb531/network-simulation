@@ -1,7 +1,7 @@
 # Calculate throughput for flow 13->21
 
 BEGIN {
-	node = 1;
+	node = 21;
 	time1 = 0.0;
 	time2 = 0.0;
 	num_packets = 0;
@@ -32,7 +32,7 @@ BEGIN {
 		bytes_counter = 0;
 	}
 
-	if (action == "r") {
+	if (action == "r" && to == node) {
 		bytes_counter += $6;
 		num_packets++;
 	}
