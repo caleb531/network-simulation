@@ -31,7 +31,7 @@ BEGIN {
 		num_packets = 0;
 	}
 
-	if (action == "r" && to == 2) {
+	if (action == "r" && to == 1) {
 		num_packets++;
 	}
 }
