@@ -1,7 +1,6 @@
 # Calculate number of sent packets per 0.5 seconds for flow 13->21
 
 BEGIN {
-	node = 21;
 	time1 = 0.0;
 	time2 = 0.0;
 	num_packets = 0;
