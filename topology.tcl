@@ -1,6 +1,13 @@
 # Create simulator object
 set ns [new Simulator]
 
+# Create trace file
+set tracefd [open topology.tr w]
+$ns trace-all $tracefd
+
+#Tell the simulator to use dynamic routing
+$ns rtproto DV
+
 
 #Constants
 
@@ -15,23 +22,20 @@ global set flowID 0
 
 
 
-proc create_traffic_sink_for_blue_edge { blueEdge }
-{
+proc create-traffic-sink-for-blue-edge { blueEdge } {
 	set sink [new Agent/TCPSink]
 	$ns attach-agent $blueEdge $sink
 
 	return sink
 }
 
-proc key { dataSourceNodeNumber dataSinkNodeNumber }
-{
+proc key { dataSourceNodeNumber dataSinkNodeNumber } {
 	return [concat $dataSourceNodeNumber $dataSinkNodeNumber]
 }
 
 
 #EXP over UDP connected to LossMonitor (exp packetSize_ 2000  burst_time_ 2.5s  idle_time_ 1s  rate_ 1200k), refer to example2.tcl
-proc create_traffic_src_for_server_10_or_16 {  }
-{
+proc create_traffic_src_for_server_10_or_16 {  } {
 	#Create an Expoo traffic agent and set its configuration parameters
 	set traffic [new Application/Traffic/Exponential]
 	$traffic set packetSize_ 2000
@@ -44,8 +48,7 @@ proc create_traffic_src_for_server_10_or_16 {  }
 }
 
 #CBR over UDP
-proc create_traffic_src_for_server_13 { udp }
-{
+proc create_traffic_src_for_server_13 { udp } {
 	set ns [Simulator instance]
 	
 
@@ -63,8 +66,7 @@ proc create_traffic_src_for_server_13 { udp }
 
 
 #FTP over TCP 
-proc create_traffic_src_for_server_9 { tcp }
-{
+proc create_traffic_src_for_server_9 { tcp } {
 	#Setup a FTP over TCP connection
 	set ftp [new Application/FTP]
 	$ftp attach-agent $tcp
@@ -80,8 +82,7 @@ proc create_traffic_src_for_server_9 { tcp }
 #	-Connect the src to the sink
 
 
-proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serverNumber}
-{
+proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serverNumber} {
 	#Create the application agent for our server...
 	set ns [Simulator instance]
 	set server = $nodes($serverNumber)
@@ -90,8 +91,7 @@ proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serve
 	$tcp set class_ 2
 	$ns attach-agent $routerOne $udp
 
-	foreach edge $serverEdges 
-	{
+	foreach edge $serverEdges {
 		set traffic_src [create_traffic_src_for_server_10_or_16]
 		set traffic_sink [create_traffic_sink_for_white_edge $nodes(edge)]
 
@@ -112,8 +112,7 @@ proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serve
 #	-Create a traffic sink at the edge [returned]
 #	-Connect the src to the sink
 
-proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges }
-{
+proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges } {
 	#Create the application agent for our server...
 	set ns [Simulator instance]
 	set server = $nodes(13)
@@ -121,8 +120,7 @@ proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges }
 	
 	$ns attach-agent $server $udp
 
-	foreach edge $serverEdges 
-	{
+	foreach edge $serverEdges {
 		set traffic_src [create_traffic_src_for_server_13 udp]
 		set traffic_sink [create_traffic_sink_for_green_edge $nodes(edge)]
 
@@ -145,8 +143,7 @@ proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges }
 #	-Create a traffic sink at the edge [returned]
 #	-Connect the src to the sink
 
-proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges }
-{
+proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges } {
 	#Create the application agent for our server...
 	set ns [Simulator instance]
 	set server = $nodes(9)
@@ -155,8 +152,7 @@ proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges }
 	$tcp set class_ 2
 	$ns attach-agent $server $tcp
 
-	foreach edge $serverEdges 
-	{
+	foreach edge $serverEdges {
 		set traffic_src [create_traffic_src_for_server_9 tcp]
 		set traffic_sink [create_traffic_sink_for_blue_edge $nodes(edge)]
 
@@ -176,20 +172,17 @@ proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges }
 
 
 
-proc get_next_flow_id { } 
-{
+proc get_next_flow_id { } {
 	return [incr flowID]
 }
 
 
 
 #I need a better name!
-proc add_green_duplex_links { lowerIndex upperIndex dest } 
-{
+proc add_green_duplex_links { lowerIndex upperIndex dest } { 
 	set ns [Simulator instance]
 
-	for {set i lowerIndex} {$i <= upperIndex} {incr i}
-	{
+	for {set i lowerIndex} {$i <= upperIndex} {incr i} {
 		#link the ith node with the destination node
 		$ns duplex-link $nodes($i) $nodes(dest) 1Mb 20ms DropTail
 
@@ -199,12 +192,10 @@ proc add_green_duplex_links { lowerIndex upperIndex dest }
 }
 
 #I need a better name!
-proc add_black_duplex_links { lowerIndex upperIndex dest }
-{
+proc add_black_duplex_links { lowerIndex upperIndex dest } {
 	set ns [Simulator instance]
 
-	for {set i lowerIndex} {$i <= upperIndex} {incr i}
-	{
+	for {set i lowerIndex} {$i <= upperIndex} {incr i} {
 		#link the ith node with the destination node
 		$ns duplex-link $nodes($i) $nodes(dest) 8Mb 50ms DropTail
 
@@ -214,12 +205,10 @@ proc add_black_duplex_links { lowerIndex upperIndex dest }
 }
 
 #I need a better name!
-proc add_purple_duplex_links { lowerIndex upperIndex dest }
-{
+proc add_purple_duplex_links { lowerIndex upperIndex dest } {
 	set ns [Simulator instance]
 
-	for {set i lowerIndex} {$i <= upperIndex} {incr i}
-	{
+	for {set i lowerIndex} {$i <= upperIndex} {incr i} {
 		#link the ith node with the destination node
 		$ns duplex-link $nodes($i) $nodes(dest) 2Mb 40ms DropTail
 
@@ -229,8 +218,7 @@ proc add_purple_duplex_links { lowerIndex upperIndex dest }
 }
 
 #They should all be interconnected now... [Test me]
-proc interconnect_nodes { }
-{
+proc interconnect_nodes { } {
 	#ROUTER 0
 
 	#connect edges [13-16] to router 0 via green links
@@ -280,13 +268,11 @@ proc interconnect_nodes { }
 
 }
 
-proc create_nodes { }
-{
+proc create_nodes { } {
 	set ns [Simulator instance]
 
 	#Create our nodes...
-	for {set i 0} {$i < $MAX_NODES} {incr i}
-	{
+	for {set i 0} {$i < $MAX_NODES} {incr i} {
 		nodes($i) [$ns node]
 	}
 }
@@ -299,14 +285,6 @@ proc create_nodes { }
 
 
 
-
-
-# Create trace file
-set tracefd [open topology.tr w]
-$ns trace-all $tracefd
-
-#Then, setup our events 
-set ns [Simulator instance]
 
 
 [create_nodes]
