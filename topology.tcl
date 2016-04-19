@@ -9,20 +9,7 @@ $ns trace-all $tracefd
 $ns rtproto DV
 
 
-#Constants
-
-set MAX_NODES 28
-
-#Globals
-
-global nodes
-global traffic_data_source_agents
-global traffic_data_sink_agents
-global set flowID 0
-
-
-
-proc create-traffic-sink-for-blue-edge { blueEdge } {
+proc create_traffic_sink_for_blue_edge { blueEdge } {
 	set sink [new Agent/TCPSink]
 	$ns attach-agent $blueEdge $sink
 
@@ -85,7 +72,7 @@ proc create_traffic_src_for_server_9 { tcp } {
 proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serverNumber} {
 	#Create the application agent for our server...
 	set ns [Simulator instance]
-	set server = $nodes($serverNumber)
+	set server = $::nodes($serverNumber)
 	set tcp [new Agent/TCP]
 	
 	$tcp set class_ 2
@@ -93,7 +80,7 @@ proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serve
 
 	foreach edge $serverEdges {
 		set traffic_src [create_traffic_src_for_server_10_or_16]
-		set traffic_sink [create_traffic_sink_for_white_edge $nodes(edge)]
+		set traffic_sink [create_traffic_sink_for_white_edge $::nodes(edge)]
 
 		$traffic_data_source_agents([key serverNumber edge]) $traffic_src
 		$traffic_data_sink_agents([key serverNumber edge]) $traffic_sink  
@@ -115,14 +102,14 @@ proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serve
 proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges } {
 	#Create the application agent for our server...
 	set ns [Simulator instance]
-	set server = $nodes(13)
+	set server = $::nodes(13)
 	set udp [new Agent/UDP]
 	
 	$ns attach-agent $server $udp
 
 	foreach edge $serverEdges {
 		set traffic_src [create_traffic_src_for_server_13 udp]
-		set traffic_sink [create_traffic_sink_for_green_edge $nodes(edge)]
+		set traffic_sink [create_traffic_sink_for_green_edge $::nodes(edge)]
 
 		$traffic_data_source_agents([key 13 edge]) $traffic_src
 		$traffic_data_sink_agents([key 13 edge]) $traffic_sink
@@ -146,7 +133,7 @@ proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges } {
 proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges } {
 	#Create the application agent for our server...
 	set ns [Simulator instance]
-	set server = $nodes(9)
+	set server = $::nodes(9)
 	set tcp [new Agent/TCP]
 
 	$tcp set class_ 2
@@ -154,7 +141,7 @@ proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges } {
 
 	foreach edge $serverEdges {
 		set traffic_src [create_traffic_src_for_server_9 tcp]
-		set traffic_sink [create_traffic_sink_for_blue_edge $nodes(edge)]
+		set traffic_sink [create_traffic_sink_for_blue_edge $::nodes(edge)]
 
 		$traffic_data_source_agents([key 9 edge]) $traffic_src
 		$traffic_data_sink_agents([key 9 edge]) $traffic_sink
@@ -173,6 +160,7 @@ proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges } {
 
 
 proc get_next_flow_id { } {
+
 	return [incr flowID]
 }
 
@@ -184,10 +172,10 @@ proc add_green_duplex_links { lowerIndex upperIndex dest } {
 
 	for {set i lowerIndex} {$i <= upperIndex} {incr i} {
 		#link the ith node with the destination node
-		$ns duplex-link $nodes($i) $nodes(dest) 1Mb 20ms DropTail
+		$ns duplex-link $::nodes($i) $::nodes(dest) 1Mb 20ms DropTail
 
 		#set the destination's queue size
-		$ns queue-limit $nodes($i) $nodes(dest) 10
+		$ns queue-limit $::nodes($i) $::nodes(dest) 10
 	}
 }
 
@@ -197,10 +185,10 @@ proc add_black_duplex_links { lowerIndex upperIndex dest } {
 
 	for {set i lowerIndex} {$i <= upperIndex} {incr i} {
 		#link the ith node with the destination node
-		$ns duplex-link $nodes($i) $nodes(dest) 8Mb 50ms DropTail
+		$ns duplex-link $::nodes($i) $::nodes(dest) 8Mb 50ms DropTail
 
 		#set the destination's queue size
-		$ns queue-limit $nodes($i) $nodes(dest) 15
+		$ns queue-limit $::nodes($i) $::nodes(dest) 15
 	}
 }
 
@@ -210,10 +198,10 @@ proc add_purple_duplex_links { lowerIndex upperIndex dest } {
 
 	for {set i lowerIndex} {$i <= upperIndex} {incr i} {
 		#link the ith node with the destination node
-		$ns duplex-link $nodes($i) $nodes(dest) 2Mb 40ms DropTail
+		$ns duplex-link $::nodes($i) $::nodes(dest) 2Mb 40ms DropTail
 
 		#set the destination's queue size
-		$ns queue-limit $nodes($i) $nodes(dest) 15
+		$ns queue-limit $::nodes($i) $::nodes(dest) 15
 	}
 }
 
@@ -269,24 +257,14 @@ proc interconnect_nodes { } {
 }
 
 proc create_nodes { } {
-	set ns [Simulator instance]
-
-	#Create our nodes...
-	for {set i 0} {$i < $MAX_NODES} {incr i} {
-		nodes($i) [$ns node]
+	global array set nodes {}
+	set ns [Simulator instance] 
+	for {set i 0} {$i < 28} {incr i} {
+		set nodes($i) [$ns node]
 	}
 }
 
-
-
-
-
 #Main
-
-
-
-
-
 [create_nodes]
 [interconnect_nodes]
 
