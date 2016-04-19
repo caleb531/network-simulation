@@ -14,20 +14,6 @@ global traffic_data_sink_agents
 global set flowID 0
 
 
-proc create_traffic_sink_for_white_edge { whiteEdge }
-{
-
-	return sink
-}
-
-
-proc create_traffic_sink_for_green_edge { greenEdge }
-{
-
-	return sink
-}
-
-
 
 proc create_traffic_sink_for_blue_edge { blueEdge }
 {
@@ -35,6 +21,11 @@ proc create_traffic_sink_for_blue_edge { blueEdge }
 	$ns attach-agent $blueEdge $sink
 
 	return sink
+}
+
+proc key { dataSourceNodeNumber dataSinkNodeNumber }
+{
+	return [concat $dataSourceNodeNumber $dataSinkNodeNumber]
 }
 
 
@@ -104,8 +95,8 @@ proc connect_a_traffic_src_to_each_edge_for_servers_10_or_16 { serverEdges serve
 		set traffic_src [create_traffic_src_for_server_10_or_16]
 		set traffic_sink [create_traffic_sink_for_white_edge $nodes(edge)]
 
-		$traffic_data_source_agents($edge) traffic_src
-		$traffic_data_sink_agents($edge) traffic_sink  
+		$traffic_data_source_agents([key serverNumber edge]) $traffic_src
+		$traffic_data_sink_agents([key serverNumber edge]) $traffic_sink  
 
 		#Connect the edge node's data sink to the router's data source
 		$ns connect $traffic_sink $traffic_src
@@ -135,8 +126,8 @@ proc connect_a_traffic_src_to_each_edge_for_server_13 { serverEdges }
 		set traffic_src [create_traffic_src_for_server_13 udp]
 		set traffic_sink [create_traffic_sink_for_green_edge $nodes(edge)]
 
-		$traffic_data_source_agents($edge) traffic_src
-		$traffic_data_sink_agents($edge) traffic_sink
+		$traffic_data_source_agents([key 13 edge]) $traffic_src
+		$traffic_data_sink_agents([key 13 edge]) $traffic_sink
 
 		#Connect the edge node's data sink to the router's data source
 		$ns connect $traffic_sink $traffic_src
@@ -169,8 +160,8 @@ proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges }
 		set traffic_src [create_traffic_src_for_server_9 tcp]
 		set traffic_sink [create_traffic_sink_for_blue_edge $nodes(edge)]
 
-		$traffic_data_source_agents($edge) traffic_src
-		$traffic_data_sink_agents($edge) traffic_sink
+		$traffic_data_source_agents([key 9 edge]) $traffic_src
+		$traffic_data_sink_agents([key 9 edge]) $traffic_sink
 
 		#Connect the edge node's data sink to the router's data source
 		$ns connect $traffic_sink $traffic_src
@@ -181,9 +172,6 @@ proc connect_a_traffic_src_to_each_edge_for_server_9 { serverEdges }
 
 	return tcp
 }
-
-
-
 
 
 
@@ -337,70 +325,58 @@ global traffic_data_source_agents
 global traffic_data_sink_agents
 
 #At time 1, 9->12, 13->8, 9->14 traffic flows start
-$ns at 1 "
-			$traffic_data_source_agents(12) start
-			$traffic_data_source_agents(8) start
-			$traffic_data_source_agents(14) start
+$ns at 1.0 "
+			$traffic_data_source_agents([key 9 12]) start
+			$traffic_data_source_agents([key 13 8]) start
+			$traffic_data_source_agents([key 9 14]) start
 		 "
 
 #At time 2, 13->11, 9->15, 13->17 traffic flows start
-$ns at 2 "
-			$traffic_data_source_agents(11) start
-			$traffic_data_source_agents(15) start
-			$traffic_data_source_agents(17) start
+$ns at 2.0 "
+			$traffic_data_source_agents([key 13 11]) start
+			$traffic_data_source_agents([key 9 15]) start
+			$traffic_data_source_agents([key 13 17]) start
 		 "
 
 #At time 3, 13->19, 9->18, 13->21 traffic flows start
-$ns at 3 "
-			$traffic_data_source_agents(19) start
-			$traffic_data_source_agents(18) start
-			$traffic_data_source_agents(21) start
+$ns at 3.0 "
+			$traffic_data_source_agents([key 13 19]) start
+			$traffic_data_source_agents([key 9 18]) start
+			$traffic_data_source_agents([key 13 21]) start
 		 "
 
 #At time 4, 13->24, 9->20, 13->25 traffic flows start
-$ns at 4 "
-			$traffic_data_source_agents(24) start
-			$traffic_data_source_agents(20) start
-			$traffic_data_source_agents(25) start
+$ns at 4.0 "
+			$traffic_data_source_agents([key 13 24]) start
+			$traffic_data_source_agents([key 9 20]) start
+			$traffic_data_source_agents([key 13 25]) start
 		 "
 
 #At time 5, 9->23, 13->26, 9->27 traffic flows start
-$ns at 5 "
-			$traffic_data_source_agents(23) start
-			$traffic_data_source_agents(26) start
-			$traffic_data_source_agents(27) start
+$ns at 5.0 "
+			$traffic_data_source_agents([key 9 23]) start
+			$traffic_data_source_agents([key 13 26]) start
+			$traffic_data_source_agents([key 9 27]) start
 		 "
 
 #At time 6, 10->18, 16->18 traffic flows start
-$ns at 6 "
-			$traffic_data_source_agents(18) start
-			$traffic_data_source_agents() start
-			$traffic_data_source_agents(17) start
+$ns at 6.0 "
+			$traffic_data_source_agents([key 10 18]) start
+			$traffic_data_source_agents([key 16 18]) start
 		 "
 
 #At time 7, link 1-3 goes Down, refer to example4.tcl
-$ns at 7 "
-			$traffic_data_source_agents(3) start
+$ns at 7.0 "
+			$traffic_data_source_agents([key 9 14]) start
 		 "
 
 #At time 8, link 1-3 goes Up, refer to example4.tcl
-$ns at 8 "
-			$traffic_data_source_agents(3) start
+$ns at 8.0 "
+			$traffic_data_source_agents([key 1 3]) stop
 		 "
 
-
-$ns at 2 "
-			$traffic_data_source_agents(11) start
-			$traffic_data_source_agents(15) start
-			$traffic_data_source_agents(17) start
-		 "
-
-#At time 10, ns stops
-$ns at 2 "
-			$traffic_data_source_agents(11) start
-			$traffic_data_source_agents(15) start
-			$traffic_data_source_agents(17) start
-		 "
+#At time 10, the simulation stops
+$ns at 10.0 "finish"
 
 
 
