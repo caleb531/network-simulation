@@ -8,6 +8,11 @@ $ns trace-all $tracefd
 #Tell the simulator to use dynamic routing
 $ns rtproto DV
 
+array set nodes {}
+array set traffic_data_source_agents {}
+array set traffic_data_sink_agents {}
+set flowID 0
+
 
 proc create_traffic_sink_for_blue_edge { blueEdge } {
 	set sink [new Agent/TCPSink]
@@ -257,7 +262,6 @@ proc interconnect_nodes { } {
 }
 
 proc create_nodes { } {
-	global array set nodes {}
 	set ns [Simulator instance] 
 	for {set i 0} {$i < 28} {incr i} {
 		set nodes($i) [$ns node]
@@ -276,9 +280,6 @@ set server16AppAgent [connect_a_traffic_src_to_each_edge_for_servers_10_or_16 "1
 
 
 #Setup our events
-
-global traffic_data_source_agents
-global traffic_data_sink_agents
 
 #At time 1, 9->12, 13->8, 9->14 traffic flows start
 $ns at 1.0 "
