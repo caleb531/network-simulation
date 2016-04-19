@@ -9,7 +9,7 @@ BEGIN {
 {
 
 	action = $1;
-	time2 = $2;
+	time = $2;
 	from = $3;
 	to = $4;
 	type = $5;
