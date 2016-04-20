@@ -13,7 +13,7 @@ proc create_trafficSink_for_blue_edge { blueEdge } {
 	set sink [new Agent/TCPSink]
 	$ns attach-agent $blueEdge $sink
 
-	return sink
+	return $sink
 }
 
 
@@ -27,13 +27,12 @@ proc create_trafficSrc_for_server_10_or_16 {  } {
 	$traffic set rate_ 1200k
 
 	#return the data source
-	return traffic
+	return $traffic
 }
 
 #CBR over UDP
 proc create_trafficSrc_for_server_13 { udp } {
 	set ns [Simulator instance]
-	
 
 	#Setup a FTP over TCP connection
 	set cbr [new Application/Traffic/CBR]
@@ -44,11 +43,11 @@ proc create_trafficSrc_for_server_13 { udp } {
 
 
 	#return the data source
-	return cbr
+	return $cbr
 }
 
 
-#FTP over TCP 
+#FTP over TCP
 proc create_trafficSrc_for_server_9 { tcp } {
 	#Setup a FTP over TCP connection
 	set serverNineFTP [new Application/FTP]
@@ -56,7 +55,7 @@ proc create_trafficSrc_for_server_9 { tcp } {
 	$serverNineFTP set type_ FTP
 
 	#return the data source
-	return serverNineFTP
+	return $serverNineFTP
 }
 
 #For each destination node for this server
@@ -69,7 +68,7 @@ proc create_trafficSrc_for_server_9 { tcp } {
 
 
 #I need a better name!
-proc add-green-duplex-links { lowerIndex upperIndex dest } { 
+proc add-green-duplex-links { lowerIndex upperIndex dest } {
 	set ns [Simulator instance]
 
 	for {set i lowerIndex} {$i <= $upperIndex} {incr i} {
@@ -206,6 +205,7 @@ foreach edge $serverEdges {
 	set trafficDataSinkAgents(linkKey) $trafficSink
 
 	#Connect the edge node's data sink to the router's data source
+	# TODO: This line is causing a compilation error
 	$ns connect $trafficSrc $trafficSink
 
 	#Set a ID for this flow [currently just set linearly]
@@ -222,7 +222,8 @@ $ns attach-agent $server $server13UDP
 
 foreach edge $serverEdges {
 	set trafficSrc [create_trafficSrc_for_server_13 $server13UDP]
-	set trafficSink [create_trafficSink_for_green_edge $nodes(edge)]
+	# TODO: Function create_trafficSink_for_green_edge does not exist
+	set trafficSink [create_trafficSink_for_green_edge $nodes($edge)]
 
 	set trafficDataSourceAgents([key 13 $edge]) $trafficSrc
 	set trafficDataSinkAgents([key 13 $edge]) $trafficSink
@@ -246,10 +247,12 @@ $ns attach-agent $server $server10UDPAgent
 
 foreach edge $serverEdges {
 	set trafficSrc [create_trafficSrc_for_server_10_or_16]
+	# TODO: Function create_trafficSink_for_white_edge does not exist
+	# Also called on line 275
 	set trafficSink [create_trafficSink_for_white_edge $nodes($edge)]
 
 	set trafficDataSourceAgents([key $serverNumber $edge]) $trafficSrc
-	set trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink  
+	set trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink
 
 	#Connect the edge node's data sink to the router's data source
 	$ns connect $trafficSrc $trafficSink
@@ -272,7 +275,7 @@ foreach edge $serverEdges {
 	set trafficSink [create_trafficSink_for_white_edge $nodes($edge)]
 
 	set trafficDataSourceAgents([key $serverNumber $edge]) $trafficSrc
-	set trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink  
+	set trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink
 
 	#Connect the edge node's data sink to the router's data source
 	$ns connect $trafficSrc $trafficSink
