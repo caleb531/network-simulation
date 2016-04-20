@@ -8,6 +8,25 @@ proc key { dataSourceNodeNumber dataSinkNodeNumber } {
 	return [concat $dataSourceNodeNumber $dataSinkNodeNumber]
 }
 
+#Null traffic sinks
+proc create_trafficSink_for_green_edge { greenEdge } {
+	set ns [Simulator instance]
+	set null0 [new Agent/Null]
+	$ns attach-agent $greenEdge $null0
+
+	return $null0
+}
+
+#LossMonitor data sinks
+proc create_trafficSink_for_white_edge { whiteEdge } {
+	set ns [Simulator instance]
+	set sink0 [new Agent/LossMonitor]
+	$ns attach-agent $whiteEdge $sink0
+
+	return $sink0
+}
+
+
 proc create_trafficSink_for_blue_edge { blueEdge } {
 	set ns [Simulator instance]
 	set sink [new Agent/TCPSink]
@@ -222,7 +241,6 @@ $ns attach-agent $server $server13UDP
 
 foreach edge $serverEdges {
 	set trafficSrc [create_trafficSrc_for_server_13 $server13UDP]
-	# TODO: Function create_trafficSink_for_green_edge does not exist
 	set trafficSink [create_trafficSink_for_green_edge $nodes($edge)]
 
 	set trafficDataSourceAgents([key 13 $edge]) $trafficSrc
@@ -247,8 +265,6 @@ $ns attach-agent $server $server10UDPAgent
 
 foreach edge $serverEdges {
 	set trafficSrc [create_trafficSrc_for_server_10_or_16]
-	# TODO: Function create_trafficSink_for_white_edge does not exist
-	# Also called on line 275
 	set trafficSink [create_trafficSink_for_white_edge $nodes($edge)]
 
 	set trafficDataSourceAgents([key $serverNumber $edge]) $trafficSrc
