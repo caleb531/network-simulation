@@ -51,12 +51,12 @@ proc create_trafficSrc_for_server_13 { udp } {
 #FTP over TCP 
 proc create_trafficSrc_for_server_9 { tcp } {
 	#Setup a FTP over TCP connection
-	set ftp [new Application/FTP]
-	$ftp attach-agent $tcp
-	$ftp set type_ FTP
+	set serverNineFTP [new Application/FTP]
+	$serverNineFTP attach-agent $tcp
+	$serverNineFTP set type_ FTP
 
 	#return the data source
-	return ftp
+	return serverNineFTP
 }
 
 #For each destination node for this server
@@ -65,103 +65,7 @@ proc create_trafficSrc_for_server_9 { tcp } {
 #	-Connect the src to the sink
 
 
-proc connect_a_trafficSrc_to_each_edge_for_servers_10_or_16 { serverEdges serverNumber} {
-	#Create the application agent for our server...
-	set ns [Simulator instance]
-	global nodes
-	global trafficDataSourceAgents
 
-	set server $nodes($serverNumber)
-	set tcp [new Agent/TCP]
-	
-	$tcp set class_ 2
-	$ns attach-agent $routerOne $udp
-
-	foreach edge $serverEdges {
-		set trafficSrc [create_trafficSrc_for_server_10_or_16]
-		set trafficSink [create_trafficSink_for_white_edge $nodes($edge)]
-
-		set $trafficDataSourceAgents([key $serverNumber $edge]) $trafficSrc
-		set $trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink  
-
-		#Connect the edge node's data sink to the router's data source
-		$ns connect $trafficSink $trafficSrc
-
-		#Set a ID for this flow [currently just set linearly]
-		$tcp set fid_ [get_next_flow_id]
-	}
-
-	return tcp
-}
-
-
-#For each destination node for this server
-#	-Create a traffic src at the server [returned]
-#	-Create a traffic sink at the edge [returned]
-#	-Connect the src to the sink
-
-proc connect_a_trafficSrc_to_each_edge_for_server_13 { serverEdges } {
-	#Create the application agent for our server...
-	set ns [Simulator instance]
-	global nodes
-	global trafficDataSourceAgents
-
-	set server $nodes(13)
-	set udp [new Agent/UDP]
-	
-	$ns attach-agent $server $udp
-
-	foreach edge $serverEdges {
-		set trafficSrc [create_trafficSrc_for_server_13 $udp]
-		set trafficSink [create_trafficSink_for_green_edge $nodes(edge)]
-
-		set $trafficDataSourceAgents([key 13 $edge]) $trafficSrc
-		set $trafficDataSinkAgents([key 13 $edge]) $trafficSink
-
-		#Connect the edge node's data sink to the router's data source
-		$ns connect $trafficSink $trafficSrc
-
-		#Set a ID for this flow [currently just set linearly]
-		$udp set fid_ [get_next_flow_id]
-	}
-
-	return udp
-}
-
-
-#For each destination node for this server
-#	-Create a traffic src at the server [returned]
-#	-Create a traffic sink at the edge [returned]
-#	-Connect the src to the sink
-
-proc connect_a_trafficSrc_to_each_edge_for_server_9 { serverEdges } {
-	#Create the application agent for our server...
-	global nodes
-	global trafficDataSourceAgents
-	set ns [Simulator instance]
-	set server $nodes(9)
-	set tcp [new Agent/TCP]
-
-	$tcp set class_ 2
-	$ns attach-agent $server $tcp
-
-	foreach edge $serverEdges {
-
-		set trafficSrc [create_trafficSrc_for_server_9 $tcp]
-		set trafficSink [create_trafficSink_for_blue_edge $nodes($edge)]
-
-		set $trafficDataSourceAgents([key 9 $edge]) $trafficSrc
-		set $trafficDataSinkAgents([key 9 $edge]) $trafficSink
-
-		#Connect the edge node's data sink to the router's data source
-		$ns connect $trafficSink $trafficSrc
-
-		#Set a ID for this flow [currently just set linearly]
-		$tcp set fid_ [get_next_flow_id]
-	}
-
-	return tcp
-}
 
 
 #I need a better name!
@@ -258,8 +162,8 @@ proc interconnect_nodes { } {
 #Main
 
 global array set nodes {}
-global array set trafficDataSourceAgents {}
-global array set trafficDataSinkAgents {}
+array set trafficDataSourceAgents {}
+array set trafficDataSinkAgents {}
 global set flowID 0
 
 # Create simulator object
@@ -282,10 +186,102 @@ for {set i 0} {$i < $max_nodes} {incr i} {
 interconnect_nodes
 
 
-set serverNineAppAgent [connect_a_trafficSrc_to_each_edge_for_server_9 "12 14 15 20 23 27"]
-set server13AppAgent [connect_a_trafficSrc_to_each_edge_for_server_13 "8 11 17 19 21 24 25 26"]
-set server10AppAgent [connect_a_trafficSrc_to_each_edge_for_servers_10_or_16 "18 22" 10]
-set server16AppAgent [connect_a_trafficSrc_to_each_edge_for_servers_10_or_16 "18 22" 16]
+#Create a traffic source at server 9 for each destination agent connected to server 9
+set server $nodes(9)
+set serverNineTCPAgent [new Agent/TCP]
+set serverEdges "12 14 15 20 23 27"
+
+$serverNineTCPAgent set class_ 2
+$ns attach-agent $server $serverNineTCPAgent
+
+
+foreach edge $serverEdges {
+
+	set trafficSrc [create_trafficSrc_for_server_9 $serverNineTCPAgent]
+	set trafficSink [create_trafficSink_for_blue_edge $nodes($edge)]
+
+	set linkKey [key 9 $edge]
+
+	set trafficDataSourceAgents(linkKey) $trafficSrc
+	set trafficDataSinkAgents(linkKey) $trafficSink
+
+	#Connect the edge node's data sink to the router's data source
+	$ns connect $trafficSrc $trafficSink
+
+	#Set a ID for this flow [currently just set linearly]
+	$serverNineTCPAgent set fid_ [get_next_flow_id]
+}
+
+
+#Create a traffic source agent at server 13 for each destination agent connected to server 13
+set server $nodes(13)
+set server13UDP [new Agent/UDP]
+set serverEdges "8 11 17 19 21 24 25 26"
+
+$ns attach-agent $server $server13UDP
+
+foreach edge $serverEdges {
+	set trafficSrc [create_trafficSrc_for_server_13 $server13UDP]
+	set trafficSink [create_trafficSink_for_green_edge $nodes(edge)]
+
+	set trafficDataSourceAgents([key 13 $edge]) $trafficSrc
+	set trafficDataSinkAgents([key 13 $edge]) $trafficSink
+
+	#Connect the edge node's data sink to the router's data source
+	$ns connect $trafficSrc $trafficSink
+
+	#Set a ID for this flow [currently just set linearly]
+	$server13UDP set fid_ [get_next_flow_id]
+}
+
+
+
+#Create a traffic source agent at server 10 for each destination agent connected to server 10
+
+set server $nodes(10)
+set server10UDPAgent [new Agent/UDP]
+set serverEdges "18 22"
+
+$ns attach-agent $server $server10UDPAgent
+
+foreach edge $serverEdges {
+	set trafficSrc [create_trafficSrc_for_server_10_or_16]
+	set trafficSink [create_trafficSink_for_white_edge $nodes($edge)]
+
+	set trafficDataSourceAgents([key $serverNumber $edge]) $trafficSrc
+	set trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink  
+
+	#Connect the edge node's data sink to the router's data source
+	$ns connect $trafficSrc $trafficSink
+
+	#Set a ID for this flow [currently just set linearly]
+	$server10UDPAgent set fid_ [get_next_flow_id]
+}
+
+
+#Create a traffic source agent at server 16 for each destination agent connected to server 16
+
+set server $nodes(16)
+set server16UDPAgent [new Agent/UDP]
+set serverEdges "18 22"
+
+$ns attach-agent $server $server10UDPAgent
+
+foreach edge $serverEdges {
+	set trafficSrc [create_trafficSrc_for_server_10_or_16]
+	set trafficSink [create_trafficSink_for_white_edge $nodes($edge)]
+
+	set trafficDataSourceAgents([key $serverNumber $edge]) $trafficSrc
+	set trafficDataSinkAgents([key $serverNumber $edge]) $trafficSink  
+
+	#Connect the edge node's data sink to the router's data source
+	$ns connect $trafficSrc $trafficSink
+
+	#Set a ID for this flow [currently just set linearly]
+	$server16UDPAgent set fid_ [get_next_flow_id]
+}
+
+
 
 
 #Setup our events
