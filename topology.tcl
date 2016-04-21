@@ -66,15 +66,10 @@ proc create_trafficSrc_for_server_13 { udp } {
 }
 
 
+
 #FTP over TCP
 proc create_trafficSrc_for_server_9 { tcp } {
-	#Setup a FTP over TCP connection
-	set serverNineFTP [new Application/FTP]
-	$serverNineFTP attach-agent $tcp
-	$serverNineFTP set type_ FTP
-
-	#return the data source
-	return $serverNineFTP
+	
 }
 
 #For each destination node for this server
@@ -206,26 +201,41 @@ interconnect_nodes
 
 #Create a traffic source at server 9 for each destination agent connected to server 9
 set server $nodes(9)
-set serverNineTCPAgent [new Agent/TCP]
+
 set serverEdges "12 14 15 20 23 27"
 
-$serverNineTCPAgent set class_ 2
-$ns attach-agent $server $serverNineTCPAgent
 
+
+#Create a single TCP network layer for server nine
+
+#Need to create seperate TCP agents!
 
 foreach edge $serverEdges {
+	set serverNineTCPAgent [new Agent/TCP]
 
-	set trafficSrc [create_trafficSrc_for_server_9 $serverNineTCPAgent]
+	$serverNineTCPAgent set class_ 2
+	$ns attach-agent $server $serverNineTCPAgent
+
+	#Setup a FTP over TCP connection
+	set serverNineFTP [new Application/FTP]
+	$serverNineFTP attach-agent $serverNineTCPAgent
+	$serverNineFTP set type_ FTP
+
+	#return the data source
+
+
+	#Agent/TCPSink [return type]
 	set trafficSink [create_trafficSink_for_blue_edge $nodes($edge)]
 
 	set linkKey [key 9 $edge]
 
-	set trafficDataSourceAgents(linkKey) $trafficSrc
+	#cache for future lookup...
+	set trafficDataSourceAgents(linkKey) $serverNineFTP
 	set trafficDataSinkAgents(linkKey) $trafficSink
 
-	#Connect the edge node's data sink to the router's data source
-	# TODO: This line is causing a compilation error
-	$ns connect $trafficSrc $trafficSink
+	#Connect the edge node's data sink to the server's FTP agent for this edge
+	# TODO: This line is causing a compilation error 
+	$ns connect $serverNineFTP $trafficSink
 
 	#Set a ID for this flow [currently just set linearly]
 	$serverNineTCPAgent set fid_ [get_next_flow_id]
