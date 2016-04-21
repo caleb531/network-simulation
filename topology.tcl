@@ -28,6 +28,7 @@ proc key { sourceNodeNumber destNodeNumber } {
 proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
 
+	global nodes
 	global dataSourceAgents
 	global dataSourceProtocolAgents
 	global dataSinks
@@ -60,7 +61,7 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 
 proc create-all-white-data-connections { destNodeNumbers sourceNodeNumber } {
 	foreach destNodeNumber $destNodeNumbers {
-		create-blue-data-connection $sourceNodeNumber $destNodeNumber
+		create-white-data-connection $sourceNodeNumber $destNodeNumber
 	}
 }
 
@@ -68,6 +69,7 @@ proc create-all-white-data-connections { destNodeNumbers sourceNodeNumber } {
 proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
 
+	global nodes
 	global dataSourceAgents
 	global dataSourceProtocolAgents
 	global dataSinks
@@ -98,7 +100,7 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 
 proc create-all-green-data-connections { destNodeNumbers sourceNodeNumber } {
 	foreach destNodeNumber $destNodeNumbers {
-		create-blue-data-connection $sourceNodeNumber $destNodeNumber
+		create-green-data-connection $sourceNodeNumber $destNodeNumber
 	}
 }
 
@@ -106,6 +108,7 @@ proc create-all-green-data-connections { destNodeNumbers sourceNodeNumber } {
 proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
 
+	global nodes
 	global dataSourceAgents
 	global dataSourceProtocolAgents
 	global dataSinks
