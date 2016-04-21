@@ -53,7 +53,6 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	#Connect the source and the sink
 	$ns connect $udp $sink
 
-	#associate my fresh data source with its link key
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -92,7 +91,6 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	#Connect the source and the sink
 	$ns connect $udp $sink
 
-	#associate my fresh data source with its link key
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -126,7 +124,6 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	set sink [new Agent/TCPSink]
 	$ns attach-agent $nodes($destNodeNumber) $sink
 
-	#associate my fresh data source with its link key
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $ftp
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $tcp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
