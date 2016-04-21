@@ -198,51 +198,43 @@ $ns at 1.0 "
 			$dataSourceAgents([key 9 12]) start
 			$dataSourceAgents([key 13 8]) start
 			$dataSourceAgents([key 9 14]) start
-		 "
+		   "
 
 #At time 2, 13->11, 9->15, 13->17 traffic flows start
 $ns at 2.0 "
 			$dataSourceAgents([key 13 11]) start
 			$dataSourceAgents([key 9 15]) start
 			$dataSourceAgents([key 13 17]) start
-		 "
+		   "
 
-#At time 3, 13->19, 9->18, 13->21 traffic flows start
+#At time 3, 13->19, 10->18, 13->21 traffic flows start
 $ns at 3.0 "
 			$dataSourceAgents([key 13 19]) start
-			$dataSourceAgents([key 9 18]) start
+			$dataSourceAgents([key 10 18]) start
 			$dataSourceAgents([key 13 21]) start
-		 "
+		   "
 
 #At time 4, 13->24, 9->20, 13->25 traffic flows start
 $ns at 4.0 "
 			$dataSourceAgents([key 13 24]) start
 			$dataSourceAgents([key 9 20]) start
 			$dataSourceAgents([key 13 25]) start
-		 "
-
-#At time 5, 9->23, 13->26, 9->27 traffic flows start
-$ns at 5.0 "
-			$dataSourceAgents([key 9 23]) start
-			$dataSourceAgents([key 13 26]) start
-			$dataSourceAgents([key 9 27]) start
-		 "
-
-#At time 6, 10->18, 16->18 traffic flows start
-$ns at 6.0 "
-			$dataSourceAgents([key 10 18]) start
-			$dataSourceAgents([key 16 18]) start
-		 "
-
-#At time 7, link 1-3 goes Down, refer to example4.tcl
-$ns at 7.0 "
-			$dataSourceAgents([key 9 14]) stop
 		   "
 
+#At time 5, 9->23, 13->26, 9->27 traffic flows start
+$ns at 5.0 "$dataSourceAgents([key 9 23]) start
+			$dataSourceAgents([key 13 26]) start
+			$dataSourceAgents([key 9 27]) start
+		   "
+
+#At time 6, 16->18 traffic flows start
+$ns at 6.0 "$dataSourceAgents([key 16 18]) start"
+
+#At time 7, link 1-3 goes Down, refer to example4.tcl
+$ns rtmodel-at 7.0 down $nodes(1) $nodes(3)
+
 #At time 8, link 1-3 goes Up, refer to example4.tcl
-$ns at 8.0 "
-			$dataSourceAgents([key 1 3]) start
-		 "
+$ns rtmodel-at 8.0 up $nodes(1) $nodes(3)
 
 #At time 10, the simulation stops
 $ns at 10.0 "finish"
