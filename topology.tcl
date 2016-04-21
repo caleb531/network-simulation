@@ -20,10 +20,16 @@ proc finish {} {
 	exit 0
 }
 
+proc get-next-flow-id { } {
+	global nextFlowID
+	set nextFlowID [incr nextFlowID]
+
+	return nextFlowID
+}
+
 proc key { sourceNodeNumber destNodeNumber } {
 	return [concat $sourceNodeNumber $destNodeNumber]
 }
-
 
 proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
@@ -53,6 +59,8 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	#Connect the source and the sink
 	$ns connect $udp $sink
 
+	$traffic set fid_ [get-next-flow-id]
+
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -63,7 +71,6 @@ proc create-all-white-data-connections { destNodeNumbers sourceNodeNumber } {
 		create-white-data-connection $sourceNodeNumber $destNodeNumber
 	}
 }
-
 
 proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
@@ -91,6 +98,8 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	#Connect the source and the sink
 	$ns connect $udp $sink
 
+	$traffic set fid_ [get-next-flow-id]
+
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -101,7 +110,6 @@ proc create-all-green-data-connections { destNodeNumbers sourceNodeNumber } {
 		create-green-data-connection $sourceNodeNumber $destNodeNumber
 	}
 }
-
 
 proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
@@ -124,9 +132,12 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	set sink [new Agent/TCPSink]
 	$ns attach-agent $nodes($destNodeNumber) $sink
 
+	$ftp set fid_ [get-next-flow-id]
+
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $ftp
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $tcp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
+
 }
 
 proc create-all-blue-data-connections { destNodeNumbers sourceNodeNumber } {
@@ -134,10 +145,6 @@ proc create-all-blue-data-connections { destNodeNumbers sourceNodeNumber } {
 		create-blue-data-connection $sourceNodeNumber $destNodeNumber
 	}
 }
-
-
-#oh god...can I haz a duplex linking method plz???
-#I CANZ!!!! THANK YOU MAW!
 
 proc duplex-link-all {edges dest bandwidth latency queueMethod queueLimit} {
 	global nodes
@@ -149,6 +156,55 @@ proc duplex-link-all {edges dest bandwidth latency queueMethod queueLimit} {
 	}
 }
 
+#At time 1, 9->12, 13->8, 9->14 traffic flows start
+proc time1Events {} {
+	global dataSourceAgents
+
+	$dataSourceAgents([key 9 12]) start
+	$dataSourceAgents([key 13 8]) start
+	$dataSourceAgents([key 9 14]) start
+}
+
+
+#At time 2, 13->11, 9->15, 13->17 traffic flows start
+proc time2Events {} {
+	global dataSourceAgents
+
+	$dataSourceAgents([key 13 11]) start
+	$dataSourceAgents([key 9 15]) start
+	$dataSourceAgents([key 13 17]) start
+}
+
+#At time 3, 13->19, 10->18, 13->21 traffic flows start
+proc time3Events {} {
+	global dataSourceAgents
+
+	$dataSourceAgents([key 13 19]) start
+	$dataSourceAgents([key 10 18]) start
+	$dataSourceAgents([key 13 21]) start
+}
+
+#At time 4, 13->24, 9->20, 13->25 traffic flows start
+proc time4Events {} {
+	global dataSourceAgents
+
+	$dataSourceAgents([key 13 24]) start
+	$dataSourceAgents([key 9 20]) start
+	$dataSourceAgents([key 13 25]) start
+}
+
+#At time 5, 9->23, 13->26, 9->27 traffic flows start
+proc time5Events {} {
+	global dataSourceAgents
+
+	$dataSourceAgents([key 9 23]) start
+	$dataSourceAgents([key 13 26]) start
+	$dataSourceAgents([key 9 27]) start
+}
+
+
+
+set nextFlowID 0
 set max_nodes 28
 array set dataSourceAgents {}
 array set dataSourceProtocolAgents {}
@@ -185,44 +241,26 @@ duplex-link-all "2 3" 1 8Mb 50ms DropTail 20
 #Create our connections
 create-all-blue-data-connections "12 14 15 20 23 27" 9
 create-all-green-data-connections "8 11 17 19 21 24 25 26" 13
-create-all-white-data-connections "18 22" 10
-create-all-white-data-connections "18 22" 16
+create-all-white-data-connections "18" 10
+create-all-white-data-connections "18" 16
 
 
 #Make some events
+
 #At time 1, 9->12, 13->8, 9->14 traffic flows start
-$ns at 1.0 "
-			$dataSourceAgents([key 9 12]) start
-			$dataSourceAgents([key 13 8]) start
-			$dataSourceAgents([key 9 14]) start
-		   "
+$ns at 1.0 "time1Events"
 
 #At time 2, 13->11, 9->15, 13->17 traffic flows start
-$ns at 2.0 "
-			$dataSourceAgents([key 13 11]) start
-			$dataSourceAgents([key 9 15]) start
-			$dataSourceAgents([key 13 17]) start
-		   "
+$ns at 2.0 "time2Events"
 
 #At time 3, 13->19, 10->18, 13->21 traffic flows start
-$ns at 3.0 "
-			$dataSourceAgents([key 13 19]) start
-			$dataSourceAgents([key 10 18]) start
-			$dataSourceAgents([key 13 21]) start
-		   "
+$ns at 3.0 "time3Events"
 
 #At time 4, 13->24, 9->20, 13->25 traffic flows start
-$ns at 4.0 "
-			$dataSourceAgents([key 13 24]) start
-			$dataSourceAgents([key 9 20]) start
-			$dataSourceAgents([key 13 25]) start
-		   "
+$ns at 4.0 "time4Events"
 
 #At time 5, 9->23, 13->26, 9->27 traffic flows start
-$ns at 5.0 "$dataSourceAgents([key 9 23]) start
-			$dataSourceAgents([key 13 26]) start
-			$dataSourceAgents([key 9 27]) start
-		   "
+$ns at 5.0 "time5Events"
 
 #At time 6, 16->18 traffic flows start
 $ns at 6.0 "$dataSourceAgents([key 16 18]) start"
