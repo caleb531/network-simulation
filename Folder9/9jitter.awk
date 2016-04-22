@@ -22,7 +22,7 @@ BEGIN {
 	packet_id = $12;
 
 	# Replace 0 with the designated flow_id for flow 9->27
-	if (src == 9 && dst == 27) {
+	if (int(src) == 9 && int(dst) == 27) {
 
 		if (packet_id > highest_packet_id) {
 			highest_packet_id = packet_id;

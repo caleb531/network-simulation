@@ -19,7 +19,7 @@ BEGIN {
 	seq_no = $11;
 	packet_id = $12;
 
-	if (src == 13 && dst == 21) {
+	if (int(src) == 13 && int(dst) == 21) {
 
 		if (time2 - time1 > 0.5) {
 			printf("%f \t %f\n", time2, num_packets) > "13sent.xls";

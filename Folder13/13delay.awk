@@ -20,7 +20,7 @@ BEGIN {
 	seq_no = $11;
 	packet_id = $12;
 
-	if (src == 13 && dst == 21) {
+	if (int(src) == 13 && int(dst) == 21) {
 
 		if (packet_id > highest_packet_id) {
 			highest_packet_id = packet_id;

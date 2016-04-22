@@ -19,7 +19,7 @@ BEGIN {
 	seq_no = $11;
 	packet_id = $12;
 
-	if (src == 16 && dst == 18) {
+	if (int(src) == 16 && int(dst) == 18) {
 
 		if (time2 - time1 > 0.5) {
 			throughput = bytes_counter / (time2 - time1);
