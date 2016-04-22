@@ -24,7 +24,7 @@ proc get-next-flow-id { } {
 	global nextFlowID
 	set nextFlowID [incr nextFlowID]
 
-	return nextFlowID
+	return $nextFlowID
 }
 
 proc key { sourceNodeNumber destNodeNumber } {
@@ -49,7 +49,7 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	$traffic set burst_time_ 2.5s
 	$traffic set idle_time_ 1s
 	$traffic set rate_ 1200k
-        
+
     # Attach traffic source to the traffic generator
     $traffic attach-agent $udp
 
@@ -88,7 +88,7 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	set traffic [new Application/Traffic/CBR]
 	$traffic set packetSize_ 500
 	$traffic set interval_ 0.005
-        
+
     # Attach traffic source to the traffic generator
     $traffic attach-agent $udp
 
@@ -220,13 +220,13 @@ for {set i 0} {$i < $max_nodes} {incr i} {
 #Edges first (all linked via green duplex links)
 #ROUTER 0
 duplex-link-all "13 14 15 16" 0 1Mb 20ms DropTail 10
-#ROUTER 1 
+#ROUTER 1
 duplex-link-all "7 8 9 10 11 12" 1 1Mb 20ms DropTail 10
-#ROUTER 4 
+#ROUTER 4
 duplex-link-all "17 18 19 20" 4 1Mb 20ms DropTail 10
-#ROUTER 5 
+#ROUTER 5
 duplex-link-all "21 22 23 24" 5 1Mb 20ms DropTail 10
-#ROUTER 6 
+#ROUTER 6
 duplex-link-all "25 26 27" 6 1Mb 20ms DropTail 10
 
 #Cores last
