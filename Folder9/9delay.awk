@@ -47,7 +47,7 @@ END {
 
 		if (start < end) {
 			packet_duration = end - start;
-			printf("%f \t %f\n", start, packet_duration) > "13delay.xls";
+			printf("%f \t %f\n", start, packet_duration) > "9delay.xls";
 		}
 
 	}

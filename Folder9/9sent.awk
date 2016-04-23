@@ -22,7 +22,7 @@ BEGIN {
 	if (int(src) == 9 && int(dst) == 27) {
 
 		if (time2 - time1 > 0.5) {
-			printf("%f \t %f\n", time2, num_packets) > "13sent.xls";
+			printf("%f \t %f\n", time2, num_packets) > "9sent.xls";
 			time1 = time2;
 			num_packets = 0;
 		}
