@@ -34,8 +34,6 @@ proc key { sourceNodeNumber destNodeNumber } {
 proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
 
-	puts "Creating a white data connection between the server $sourceNodeNumber and the edge $destNodeNumber"
-
 	global nodes
 	global dataSourceAgents
 	global dataSourceProtocolAgents
@@ -62,9 +60,10 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	$ns connect $udp $sink
 
 	set flowID [get-next-flow-id]
-	puts "configuring white flow $flowID"
 
 	$traffic set fid_ $flowID
+
+	puts "flow $flowID from $sourceNodeNumber to $destNodeNumber"
 
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
@@ -85,15 +84,13 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	global dataSourceProtocolAgents
 	global dataSinks
 
-	puts "Creating a green data connection between the server $sourceNodeNumber and the edge $destNodeNumber"
-
 	#Create a UDP agent and attach it to the node
 	set udp [new Agent/UDP]
 	$ns attach-agent $nodes($sourceNodeNumber) $udp
 
 	#Create an Expoo traffic agent and set its configuration parameters
 	set traffic [new Application/Traffic/CBR]
-	$traffic set packetSize_ 500
+	$traffic set packetSize_ 800
 	$traffic set interval_ 0.005
 	$traffic set random_ 1
 
@@ -107,9 +104,10 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	$ns connect $udp $sink
 
 	set flowID [get-next-flow-id]
-	puts "configuring green flow $flowID"
 
 	$traffic set fid_ $flowID
+
+	puts "flow $flowID from $sourceNodeNumber to $destNodeNumber"
 
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
@@ -130,9 +128,6 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	global dataSourceProtocolAgents
 	global dataSinks
 
-	puts "Creating a blue data connection between the server $sourceNodeNumber and the edge $destNodeNumber"
-
-
 	set tcp [new Agent/TCP]
 	$tcp set class_ 2
 	$ns attach-agent $nodes($sourceNodeNumber) $tcp
@@ -151,9 +146,9 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 
 	set flowID [get-next-flow-id]
 
-	puts "configuring blue flow $flowID"
-
 	$ftp set fid_ $flowID
+
+	puts "flow $flowID from $sourceNodeNumber to $destNodeNumber"
 
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $ftp
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $tcp
