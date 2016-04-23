@@ -34,6 +34,8 @@ proc key { sourceNodeNumber destNodeNumber } {
 proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	set ns [Simulator instance]
 
+	puts "Creating a white data connection between the server $sourceNodeNumber and the edge $destNodeNumber"
+
 	global nodes
 	global dataSourceAgents
 	global dataSourceProtocolAgents
@@ -59,7 +61,10 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 	#Connect the source and the sink
 	$ns connect $udp $sink
 
-	$traffic set fid_ [get-next-flow-id]
+	set flowID [get-next-flow-id]
+	puts "configuring white flow $flowID"
+
+	$traffic set fid_ $flowID
 
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
@@ -80,6 +85,8 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	global dataSourceProtocolAgents
 	global dataSinks
 
+	puts "Creating a green data connection between the server $sourceNodeNumber and the edge $destNodeNumber"
+
 	#Create a UDP agent and attach it to the node
 	set udp [new Agent/UDP]
 	$ns attach-agent $nodes($sourceNodeNumber) $udp
@@ -88,6 +95,7 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	set traffic [new Application/Traffic/CBR]
 	$traffic set packetSize_ 500
 	$traffic set interval_ 0.005
+	$traffic set random_ 1
 
     # Attach traffic source to the traffic generator
     $traffic attach-agent $udp
@@ -98,7 +106,10 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 	#Connect the source and the sink
 	$ns connect $udp $sink
 
-	$traffic set fid_ [get-next-flow-id]
+	set flowID [get-next-flow-id]
+	puts "configuring green flow $flowID"
+
+	$traffic set fid_ $flowID
 
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
@@ -119,6 +130,9 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	global dataSourceProtocolAgents
 	global dataSinks
 
+	puts "Creating a blue data connection between the server $sourceNodeNumber and the edge $destNodeNumber"
+
+
 	set tcp [new Agent/TCP]
 	$tcp set class_ 2
 	$ns attach-agent $nodes($sourceNodeNumber) $tcp
@@ -132,7 +146,14 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 	set sink [new Agent/TCPSink]
 	$ns attach-agent $nodes($destNodeNumber) $sink
 
-	$ftp set fid_ [get-next-flow-id]
+	#connect the source and the sink
+	$ns connect $tcp $sink
+
+	set flowID [get-next-flow-id]
+
+	puts "configuring blue flow $flowID"
+
+	$ftp set fid_ $flowID
 
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $ftp
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $tcp
@@ -151,6 +172,9 @@ proc duplex-link-all {edges dest bandwidth latency queueMethod queueLimit} {
 	set ns [Simulator instance]
 
 	foreach edge $edges {
+
+		puts "Linking node num $edge to node num $dest"
+
 		$ns duplex-link $nodes($edge) $nodes($dest) $bandwidth $latency $queueMethod
 		$ns queue-limit $nodes($edge) $nodes($dest) $queueLimit
 	}
