@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-tar -cf \
-	simulation.tar \
+tar -cf simulation.tar \
 	README.txt \
 	caleb_evans-kyle_gullicksen.tcl \
 	Folder9/ \
