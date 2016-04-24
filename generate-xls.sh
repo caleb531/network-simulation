@@ -25,6 +25,4 @@ generate-xls ./Folder10 "$TR_FILE"
 generate-xls ./Folder16 "$TR_FILE"
 generate-xls ./Folder13 "$TR_FILE"
 generate-xls ./Folder9 "$TR_FILE"
-echo "Creating ZIP file from XLS files..."
-zip -q ./xls-files.zip ./Folder*/*.xls
 echo "Done."
