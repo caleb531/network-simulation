@@ -24,3 +24,4 @@ generate-xls ./Folder10 "$TR_FILE"
 generate-xls ./Folder16 "$TR_FILE"
 generate-xls ./Folder13 "$TR_FILE"
 generate-xls ./Folder9 "$TR_FILE"
+zip -q ./xls-files.zip ./Folder*/*.xls
