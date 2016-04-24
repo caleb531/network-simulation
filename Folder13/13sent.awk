@@ -28,8 +28,9 @@ BEGIN {
 		}
 
 		# If packet was received at 2nd hop
-		if (action == "r" && to == 1) {
+		if (action == "r" && packet_ids[packet_id] == "") {
 			num_packets++;
+			packet_ids[packet_id] = 1;
 		}
 
 	}
