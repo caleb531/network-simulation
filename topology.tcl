@@ -3,7 +3,7 @@ set ns [new Simulator]
 
 # Create trace file
 
-set traceFile [open traceRouteOfTop.tr w]
+set traceFile [open trace.tr w]
 $ns trace-all $traceFile
 
 #Tell the simulator to use dynamic routing
@@ -63,8 +63,6 @@ proc create-white-data-connection { sourceNodeNumber destNodeNumber } {
 
 	$traffic set fid_ $flowID
 
-	puts "flow $flowID from $sourceNodeNumber to $destNodeNumber"
-
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -107,8 +105,6 @@ proc create-green-data-connection { sourceNodeNumber destNodeNumber } {
 
 	$traffic set fid_ $flowID
 
-	puts "flow $flowID from $sourceNodeNumber to $destNodeNumber"
-
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $traffic
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $udp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -148,8 +144,6 @@ proc create-blue-data-connection { sourceNodeNumber destNodeNumber } {
 
 	$ftp set fid_ $flowID
 
-	puts "flow $flowID from $sourceNodeNumber to $destNodeNumber"
-
 	set dataSourceAgents([key $sourceNodeNumber $destNodeNumber]) $ftp
 	set dataSourceProtocolAgents([key $sourceNodeNumber $destNodeNumber]) $tcp
 	set dataSinks([key $sourceNodeNumber $destNodeNumber]) $sink
@@ -167,9 +161,6 @@ proc duplex-link-all {edges dest bandwidth latency queueMethod queueLimit} {
 	set ns [Simulator instance]
 
 	foreach edge $edges {
-
-		puts "Linking node num $edge to node num $dest"
-
 		$ns duplex-link $nodes($edge) $nodes($dest) $bandwidth $latency $queueMethod
 		$ns queue-limit $nodes($edge) $nodes($dest) $queueLimit
 	}
@@ -293,5 +284,4 @@ $ns rtmodel-at 8.0 up $nodes(1) $nodes(3)
 #At time 10, the simulation stops
 $ns at 10.0 "finish"
 
-#See if stuff is broken
 $ns run

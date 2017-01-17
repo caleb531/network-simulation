@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Absolute path to TR file
-TR_FILE=./traceRouteOfTop.tr
+TR_FILE=./trace.tr
 
 # Generate XLS spreadsheets by running all Awk files in the given directory against the TR file defined in the TR_FILE
 generate-xls() {
